@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class NoteDrop : MonoBehaviour
 {
     public float time;

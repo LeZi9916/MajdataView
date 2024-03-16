@@ -38,6 +38,7 @@ public class HoldDrop : NoteLongDrop
     public Color exEffectBreak;
     private Animator animator;
 
+    bool hadPlaySound = false;
     private bool breakAnimStart;
     private SpriteRenderer exSpriteRender;
     private bool holdAnimStart;
@@ -47,9 +48,11 @@ public class HoldDrop : NoteLongDrop
     private SpriteRenderer spriteRenderer;
 
     private AudioTimeProvider timeProvider;
+    AudioManager audioManager;
 
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         var notes = GameObject.Find("Notes").transform;
         holdEffect = Instantiate(holdEffect, notes);
         holdEffect.SetActive(false);
@@ -126,6 +129,16 @@ public class HoldDrop : NoteLongDrop
         var holdDistance = holdTime * speed + 4.8f;
         if (holdTime > 0)
         {
+            audioManager.PlayEffect(AudioManager.Audio.ANSWER, time + LastFor);
+            if (isBreak)
+            {
+                audioManager.PlayEffect(AudioManager.Audio.BREAK,time + LastFor);
+                audioManager.PlayEffect(AudioManager.Audio.BREAK_EFFECT, time + LastFor);
+            }
+            else if (isEX)
+                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time + LastFor);
+            else
+                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time + LastFor);
             GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);
             if (isBreak)
                 GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;
@@ -195,6 +208,24 @@ public class HoldDrop : NoteLongDrop
 
     void PlayHoldEffect()
     {
+        if(!hadPlaySound)
+        {
+            hadPlaySound = true;
+            audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+            if (isBreak)
+            {
+                audioManager.PlayEffect(AudioManager.Audio.BREAK,time);
+                audioManager.PlayEffect(AudioManager.Audio.BREAK_EFFECT, time);
+            }
+            else if (isEX)
+            {
+                audioManager.PlayEffect(AudioManager.Audio.EX, time);
+                audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+            }
+            else
+                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time);
+        }
+
         var endTime = time + LastFor;
         GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().ResetEffect(startPosition);
         holdEffect.SetActive(true);

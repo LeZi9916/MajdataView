@@ -18,7 +18,6 @@ public class WifiDrop : NoteLongDrop
     public RuntimeAnimatorController judgeBreakShine;
 
     public bool isJustR;
-
     // public float time;
     public float timeStart;
 
@@ -36,6 +35,8 @@ public class WifiDrop : NoteLongDrop
     public float fadeInTime;
 
     public float fullFadeInTime;
+
+    bool hadPlaySound = false;
 
     public List<int> areaStep = new List<int>();
     public bool smoothSlideAnime = false;
@@ -57,9 +58,11 @@ public class WifiDrop : NoteLongDrop
     private bool startShining;
 
     private AudioTimeProvider timeProvider;
+    AudioManager audioManager;
 
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         // 计算Slide淡入时机
         // 在8.0速时应当提前300ms显示Slide
         fadeInTime = -3.926913f / speed;
@@ -185,6 +188,7 @@ public class WifiDrop : NoteLongDrop
 
         if (timing > 0f)
         {
+
             var process = (LastFor - timing) / LastFor;
             process = 1f - process;
             if (process > 1)
@@ -197,7 +201,10 @@ public class WifiDrop : NoteLongDrop
                 if (isGroupPartEnd)
                 {
                     if (isBreak)
+                    {
                         GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;
+                        audioManager.PlayEffect(AudioManager.Audio.BREAKSLIDE_EFFECT, time + LastFor);
+                    }
                     else
                         GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().slideCount++;
                     slideOK.SetActive(true);
@@ -206,6 +213,14 @@ public class WifiDrop : NoteLongDrop
                 for (var i = 0; i < star_slide.Length; i++)
                     Destroy(star_slide[i]);
                 Destroy(gameObject);
+            }
+            else if (!hadPlaySound)
+            {
+                hadPlaySound = true;
+                if (isBreak)
+                    audioManager.PlayEffect(AudioManager.Audio.BREAKSLIDE,time);
+                else
+                    audioManager.PlayEffect(AudioManager.Audio.SLIDE, time);
             }
 
             var pos = (slideBars.Count - 1) * process;

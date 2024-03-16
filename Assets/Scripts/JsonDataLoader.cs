@@ -176,9 +176,10 @@ public class JsonDataLoader : MonoBehaviour
                     CountNoteCount(timing.noteList);
                     continue;
                 }
-
                 for (var i = 0; i < timing.noteList.Count; i++)
                 {
+                    
+
                     var note = timing.noteList[i];
                     if (note.noteType == SimaiNoteType.Tap)
                     {
@@ -221,7 +222,6 @@ public class JsonDataLoader : MonoBehaviour
                     {
                         var GOnote = Instantiate(holdPrefab, notes.transform);
                         var NDCompo = GOnote.GetComponent<HoldDrop>();
-
                         // note的图层顺序
                         NDCompo.noteSortOrder = noteSortOrder;
                         noteSortOrder -= NOTE_LAYER_COUNT[note.noteType];

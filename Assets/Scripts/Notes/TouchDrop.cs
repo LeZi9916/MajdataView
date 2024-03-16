@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
+using UnityEngine;
 
 public class TouchDrop : NoteDrop
 {
@@ -39,12 +41,14 @@ public class TouchDrop : NoteDrop
     private MultTouchHandler multTouchHandler;
 
     private AudioTimeProvider timeProvider;
+    AudioManager audioManager;
 
     private float wholeDuration;
 
     // Start is called before the first frame update
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         wholeDuration = 3.209385682f * Mathf.Pow(speed, -0.9549621752f);
         moveDuration = 0.8f * wholeDuration;
         displayDuration = 0.2f * wholeDuration;
@@ -96,14 +100,20 @@ public class TouchDrop : NoteDrop
 
         if (timing > 0.05f)
         {
+            
+            audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+            
             multTouchHandler.cancelTouch(this);
             Instantiate(tapEffect, transform.position, transform.rotation);
             GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().touchCount++;
             if (isFirework)
             {
+                audioManager.PlayEffect(AudioManager.Audio.HANABI, time);
                 fireworkEffect.SetTrigger("Fire");
                 firework.transform.position = transform.position;
             }
+            else
+                audioManager.PlayEffect(AudioManager.Audio.TOUCH, time);
 
             Destroy(gameObject);
         }

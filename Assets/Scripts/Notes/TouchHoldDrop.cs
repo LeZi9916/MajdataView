@@ -18,17 +18,19 @@ public class TouchHoldDrop : NoteLongDrop
     private readonly SpriteRenderer[] fansSprite = new SpriteRenderer[6];
     private float displayDuration;
 
+    bool hadPlaySound = false;
     private GameObject firework;
     private Animator fireworkEffect;
     private float moveDuration;
 
     private AudioTimeProvider timeProvider;
-
+    AudioManager audioManager;
     private float wholeDuration;
 
     // Start is called before the first frame update
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         wholeDuration = 3.209385682f * Mathf.Pow(speed, -0.9549621752f);
         moveDuration = 0.8f * wholeDuration;
         displayDuration = 0.2f * wholeDuration;
@@ -66,13 +68,17 @@ public class TouchHoldDrop : NoteLongDrop
 
         if (timing > LastFor)
         {
+            audioManager.PlayEffect(AudioManager.Audio.ANSWER,time+LastFor);            
             Instantiate(tapEffect, transform.position, transform.rotation);
             GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().holdCount++;
             if (isFirework)
             {
+                audioManager.PlayEffect(AudioManager.Audio.HANABI, time + LastFor);
                 fireworkEffect.SetTrigger("Fire");
                 firework.transform.position = transform.position;
             }
+            else
+                audioManager.PlayEffect(AudioManager.Audio.TOUCH, time + LastFor);
 
             Destroy(holdEffect);
             Destroy(gameObject);
@@ -93,7 +99,15 @@ public class TouchHoldDrop : NoteLongDrop
         }
 
         if (float.IsNaN(distance)) distance = 0f;
-        if (distance == 0f) holdEffect.SetActive(true);
+        if (distance == 0f) 
+        {
+            holdEffect.SetActive(true);
+            if(!hadPlaySound)
+            {
+                hadPlaySound = true;
+                audioManager.PlayEffect(AudioManager.Audio.ANSWER,time);
+            }
+        }
         for (var i = 0; i < 4; i++)
         {
             var pos = (0.226f + distance) * GetAngle(i);

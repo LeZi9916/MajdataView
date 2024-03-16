@@ -22,12 +22,19 @@ public class AudioTimeProvider : MonoBehaviour
             if (isRecord)
                 AudioTime = Time.time - startTime + offset;
             else
+            {
                 AudioTime = (Time.realtimeSinceStartup - startTime) * speed + offset;
+                var source = GameObject.Find("AudioManager").transform.Find("BGM").gameObject.GetComponent<AudioSource>();
+                //AudioTime = (float)source.timeSamples / source.clip.frequency;
+                print(source.time);
+            }
         }
     }
 
     public void SetStartTime(long _ticks, float _offset, float _speed, bool _isRecord = false)
     {
+        var source = GameObject.Find("AudioManager").transform.Find("BGM").gameObject.GetComponent<AudioSource>();
+        source.Play();
         ticks = _ticks;
         offset = _offset;
         AudioTime = offset;
@@ -46,7 +53,6 @@ public class AudioTimeProvider : MonoBehaviour
             speed = _speed;
             Time.captureFramerate = 0;
         }
-
         isStart = true;
     }
 

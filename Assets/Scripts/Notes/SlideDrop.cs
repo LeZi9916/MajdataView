@@ -42,6 +42,7 @@ public class SlideDrop : NoteLongDrop
 
     Animator fadeInAnimator = null;
 
+    bool hadPlaySound = false;
     private readonly List<Animator> animators = new();
 
     private readonly List<GameObject> slideBars = new();
@@ -55,9 +56,11 @@ public class SlideDrop : NoteLongDrop
     private bool startShining;
 
     private AudioTimeProvider timeProvider;
+    AudioManager audioManager;
 
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         timeProvider = GameObject.Find("AudioTimeProvider").GetComponent<AudioTimeProvider>();        
         // 计算Slide淡入时机
         // 在8.0速时应当提前300ms显示Slide
@@ -140,7 +143,10 @@ public class SlideDrop : NoteLongDrop
                 {
                     // 只有组内最后一个Slide完成 才会显示判定条并增加总数
                     if (isBreak)
+                    {
                         GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;
+                        audioManager.PlayEffect(AudioManager.Audio.BREAKSLIDE_EFFECT, time + LastFor);
+                    }
                     else
                         GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().slideCount++;
                     slideOK.SetActive(true);
@@ -153,6 +159,14 @@ public class SlideDrop : NoteLongDrop
 
                 Destroy(star_slide);
                 Destroy(gameObject);
+            }
+            else if(!isGroupPart && !hadPlaySound)
+            {
+                hadPlaySound = true;
+                if (isBreak)
+                    audioManager.PlayEffect(AudioManager.Audio.BREAKSLIDE, time);
+                else
+                    audioManager.PlayEffect(AudioManager.Audio.SLIDE, time);
             }
 
             //print(process);

@@ -13,6 +13,7 @@ public class StarDrop : NoteDrop
     public bool isDouble;
     public bool isEX;
     public bool isNoHead;
+    public bool canPlaySound;
 
     public Sprite tapSpr;
     public Sprite eachSpr;
@@ -46,9 +47,11 @@ public class StarDrop : NoteDrop
     private SpriteRenderer spriteRenderer;
 
     private AudioTimeProvider timeProvider;
+    AudioManager audioManager;
 
     private void Start()
     {
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         var notes = GameObject.Find("Notes").transform;
         tapLine = Instantiate(tapLine, notes);
         tapLine.SetActive(false);
@@ -140,6 +143,19 @@ public class StarDrop : NoteDrop
 
         if (timing > 0)
         {
+            audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+            if (isBreak)
+            {
+                audioManager.PlayEffect(AudioManager.Audio.BREAK, time);
+                audioManager.PlayEffect(AudioManager.Audio.BREAK_EFFECT, time);
+            }
+            else if (isEX)
+            {
+                audioManager.PlayEffect(AudioManager.Audio.EX, time);
+                audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+            }
+            else
+                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time);
             if (!isNoHead)
             {
                 GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);

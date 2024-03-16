@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static AudioManager;
 
 public class HttpHandler : MonoBehaviour
 {
@@ -29,6 +31,7 @@ public class HttpHandler : MonoBehaviour
         if (request == "") return;
         var data = JsonConvert.DeserializeObject<EditRequestjson>(request);
 
+        var audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         var loader = GameObject.Find("DataLoader").GetComponent<JsonDataLoader>();
         var timeProvider = GameObject.Find("AudioTimeProvider").GetComponent<AudioTimeProvider>();
         var bgManager = GameObject.Find("Background").GetComponent<BGManager>();
@@ -39,32 +42,37 @@ public class HttpHandler : MonoBehaviour
 
         if (data.control == EditorControlMethod.Start)
         {
+            
+            audioManager.LoadAudio(data.path);
+            audioManager.Play();            
             request = "";
             timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
             loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
             loader.touchSpeed = data.touchSpeed;
             loader.smoothSlideAnime = data.smoothSlideAnime;
-            objectCounter.ComboSetActive(data.comboStatusType);
-            loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
+            objectCounter.ComboSetActive(data.comboStatusType);            
+            loader.LoadJson(File.ReadAllText(Path.Combine(data.path,"majdata.json")), data.startTime);
             GameObject.Find("Notes").GetComponent<PlayAllPerfect>().enabled = false;
-            GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>().clearSlots();
-
-            bgManager.LoadBGFromPath(new FileInfo(data.jsonPath).DirectoryName, data.audioSpeed);
+            GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>().clearSlots();          
+            bgManager.LoadBGFromPath(data.path, data.audioSpeed);
             bgCover.color = new Color(0f, 0f, 0f, data.backgroundCover);
+            //audioManager.LoadEffect();
         }
 
         if (data.control == EditorControlMethod.OpStart)
         {
+            audioManager.LoadAudio(data.path);
+            audioManager.Play();
             request = "";
             timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
             loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
             loader.touchSpeed = data.touchSpeed;
             loader.smoothSlideAnime = data.smoothSlideAnime;
             objectCounter.ComboSetActive(data.comboStatusType);
-            loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
+            loader.LoadJson(File.ReadAllText(Path.Combine(data.path, "majdata.json")), data.startTime);
             GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>().clearSlots();
 
-            bgManager.LoadBGFromPath(new FileInfo(data.jsonPath).DirectoryName, data.audioSpeed);
+            bgManager.LoadBGFromPath(data.path, data.audioSpeed);
             bgCover.color = new Color(0f, 0f, 0f, data.backgroundCover);
             bgManager.PlaySongDetail();
         }
@@ -72,13 +80,13 @@ public class HttpHandler : MonoBehaviour
         if (data.control == EditorControlMethod.Record)
         {
             request = "";
-            var maidataPath = new FileInfo(data.jsonPath).DirectoryName;
+            var maidataPath = data.path;
             timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed, true);
             loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
             loader.touchSpeed = data.touchSpeed;
             loader.smoothSlideAnime = data.smoothSlideAnime;
             objectCounter.ComboSetActive(data.comboStatusType);
-            loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
+            loader.LoadJson(File.ReadAllText(Path.Combine(data.path, "majdata.json")), data.startTime);
             multTouchHandler.clearSlots();
 
             screenRecorder.CutoffTime = getChartLength();
@@ -93,12 +101,14 @@ public class HttpHandler : MonoBehaviour
 
         if (data.control == EditorControlMethod.Pause)
         {
+            audioManager.Stop();
             timeProvider.isStart = false;
             bgManager.PauseVideo();
         }
 
         if (data.control == EditorControlMethod.Stop)
         {
+            audioManager.Stop();
             screenRecorder.StopRecording();
             timeProvider.ResetStartTime();
             SceneManager.LoadScene(1);
@@ -106,6 +116,7 @@ public class HttpHandler : MonoBehaviour
 
         if (data.control == EditorControlMethod.Continue)
         {
+            audioManager.Play();
             timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
             bgManager.ContinueVideo(data.audioSpeed);
         }
