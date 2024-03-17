@@ -130,15 +130,8 @@ public class HoldDrop : NoteLongDrop
         if (holdTime > 0)
         {
             audioManager.PlayEffect(AudioManager.Audio.ANSWER, time + LastFor);
-            if (isBreak)
-            {
-                audioManager.PlayEffect(AudioManager.Audio.BREAK,time + LastFor);
-                audioManager.PlayEffect(AudioManager.Audio.BREAK_EFFECT, time + LastFor);
-            }
-            else if (isEX)
-                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time + LastFor);
-            else
-                audioManager.PlayEffect(AudioManager.Audio.JUDGE, time + LastFor);
+            audioManager.PlayEffect(AudioManager.Audio.JUDGE, time + LastFor);
+
             GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);
             if (isBreak)
                 GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;

@@ -39,7 +39,7 @@ public class TouchDrop : NoteDrop
     private int layer;
     private float moveDuration;
     private MultTouchHandler multTouchHandler;
-
+    bool hadPlaySound = false;
     private AudioTimeProvider timeProvider;
     AudioManager audioManager;
 
@@ -100,25 +100,33 @@ public class TouchDrop : NoteDrop
 
         if (timing > 0.05f)
         {
-            
-            audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
-            
             multTouchHandler.cancelTouch(this);
             Instantiate(tapEffect, transform.position, transform.rotation);
             GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().touchCount++;
             if (isFirework)
             {
-                audioManager.PlayEffect(AudioManager.Audio.HANABI, time);
                 fireworkEffect.SetTrigger("Fire");
                 firework.transform.position = transform.position;
             }
-            else
-                audioManager.PlayEffect(AudioManager.Audio.TOUCH, time);
+                
 
             Destroy(gameObject);
         }
 
-        if (timing > 0f) justEffect.SetActive(true);
+        if (timing > 0f) 
+        {
+            justEffect.SetActive(true);
+            if(!hadPlaySound)
+            {
+                hadPlaySound = true;
+                audioManager.PlayEffect(AudioManager.Audio.ANSWER, time);
+                if (isFirework)
+                    audioManager.PlayEffect(AudioManager.Audio.HANABI, time);
+                else
+                    audioManager.PlayEffect(AudioManager.Audio.TOUCH, time);
+
+            }
+        }
 
         if (-timing <= wholeDuration && -timing > moveDuration)
         {
