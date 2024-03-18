@@ -199,7 +199,27 @@ AudioMixerController:
   m_SuspendThreshold: -80
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: e047099d60bd2ee48b32be1b8f126f87
+    name: answer
+  - guid: a7f67226058aca043b1ff78901254570
+    name: bgm
+  - guid: eed6824c5e154de4a821771f4539a27a
+    name: break
+  - guid: a520b0ef6433cc64bab2eb42e2833f76
+    name: breakslide
+  - guid: 6734c8da495d0684f9e5e96650cf737c
+    name: ex
+  - guid: aeb593ab84b0f044f8bdd9291b7ad084
+    name: hanabi
+  - guid: fce7c4d2e60f8b048930b95956930b5d
+    name: judge
+  - guid: 5e321d7414feb8647a9f43417c540fde
+    name: Main
+  - guid: 55dfaa8480deb164d8027281934f6f05
+    name: slide
+  - guid: ebd1cc7f314627c40b97efcf0a3bedda
+    name: touch
   m_AudioMixerGroupViews:
   - guids:
     - 5c28a07281b68d9409727fd4017824cc
@@ -267,8 +287,9 @@ AudioMixerSnapshotController:
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 0206aa0d4d52a2c4aa6e99be12065558
   m_FloatValues:
-    fce7c4d2e60f8b048930b95956930b5d: -3.8
+    fce7c4d2e60f8b048930b95956930b5d: -0.15415294
     5e321d7414feb8647a9f43417c540fde: 0
+    a7f67226058aca043b1ff78901254570: -0.05730994
     eed6824c5e154de4a821771f4539a27a: -0
     a520b0ef6433cc64bab2eb42e2833f76: 0
   m_TransitionOverrides: {}

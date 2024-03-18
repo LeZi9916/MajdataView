@@ -120,6 +120,8 @@ public class HttpHandler : MonoBehaviour
             timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
             bgManager.ContinueVideo(data.audioSpeed);
         }
+        if(data.control == EditorControlMethod.Volume)
+            audioManager.SetVolume(data.Volume);
 
         request = "";
     }

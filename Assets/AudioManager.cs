@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Networking;
 
 public class AudioManager : MonoBehaviour
@@ -22,6 +23,18 @@ public class AudioManager : MonoBehaviour
     public AudioClip Ex;
     public AudioClip Touch;
     public AudioClip Hanabi;
+
+    public AudioMixer AudioMixer;
+
+    public AudioMixerGroup mBgm;
+    public AudioMixerGroup mAnswer;
+    public AudioMixerGroup mJudge;
+    public AudioMixerGroup mSlide;
+    public AudioMixerGroup mBreak;
+    public AudioMixerGroup mBreakSlide;
+    public AudioMixerGroup mEx;
+    public AudioMixerGroup mTouch;
+    public AudioMixerGroup mHanabi;
 
     public float lastPlayAnswer = -1;
     public float lastPlayJudge = -1;
@@ -161,6 +174,18 @@ public class AudioManager : MonoBehaviour
         }
         PlayAudio(source);
 
+    }
+    public void SetVolume(double[] volume)
+    {
+        AudioMixer.SetFloat("bgm",(1 - (float)volume[0]) * (-80));
+        AudioMixer.SetFloat("answer", (1 - (float)volume[1]) * (-80));
+        AudioMixer.SetFloat("judge",(1 - (float)volume[2]) * (-80));
+        AudioMixer.SetFloat("slide",(1 - (float)volume[3]) * (-80));
+        AudioMixer.SetFloat("break",(1 - (float)volume[4]) * (-80));
+        AudioMixer.SetFloat("breakslide",(1 - (float)volume[5]) * (-80));
+        AudioMixer.SetFloat("ex",(1 - (float)volume[6]) * (-80));
+        AudioMixer.SetFloat("touch",(1 - (float)volume[7]) * (-80));
+        AudioMixer.SetFloat("hanabi",(1 - (float)volume[8]) * (-80));
     }
     public void Stop()
     {

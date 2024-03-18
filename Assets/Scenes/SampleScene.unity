@@ -3983,6 +3983,19 @@ MonoBehaviour:
   Ex: {fileID: 0}
   Touch: {fileID: 0}
   Hanabi: {fileID: 0}
+  AudioMixer: {fileID: 24100000, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mBgm: {fileID: 8349658500273036827, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mAnswer: {fileID: -41851096249092632, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mJudge: {fileID: -3084464507740236687, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mSlide: {fileID: -3535956443800625015, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mBreak: {fileID: -409165874169339551, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mBreakEffect: {fileID: 0}
+  mBreakSlide: {fileID: -6842806220761305128, guid: df597167157770e41ab69e5e0c1b04f9,
+    type: 2}
+  mBreakSlideEffect: {fileID: 0}
+  mEx: {fileID: -7060403071574118885, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mTouch: {fileID: 700805539294613451, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
+  mHanabi: {fileID: 1186663328222548042, guid: df597167157770e41ab69e5e0c1b04f9, type: 2}
   lastPlayAnswer: -1
   lastPlayJudge: -1
   lastPlaySlide: -1

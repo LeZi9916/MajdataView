@@ -65,6 +65,7 @@ internal class EditRequestjson
     public float startTime;
     public float touchSpeed;
     public bool smoothSlideAnime;
+    public double[] Volume;
 }
 
 public enum EditorComboIndicator
@@ -94,5 +95,6 @@ internal enum EditorControlMethod
     OpStart,
     Pause,
     Continue,
-    Record
+    Record,
+    Volume
 }
