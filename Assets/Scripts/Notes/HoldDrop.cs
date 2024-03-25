@@ -126,11 +126,14 @@ public class HoldDrop : NoteLongDrop
         var holdDistance = holdTime * speed + 4.8f;
         if (holdTime > 0)
         {
-            GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);
-            if (isBreak)
-                GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;
-            else
-                GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().holdCount++;
+            if(!isFake)
+            {
+                GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);
+                if (isBreak)
+                    GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().breakCount++;
+                else
+                    GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>().holdCount++;
+            }
             Destroy(tapLine);
             Destroy(holdEffect);
             Destroy(gameObject);
@@ -195,6 +198,8 @@ public class HoldDrop : NoteLongDrop
 
     void PlayHoldEffect()
     {
+        if (isFake)
+            return;
         var endTime = time + LastFor;
         GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().ResetEffect(startPosition);
         holdEffect.SetActive(true);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 
 internal class Majson
 {
@@ -37,6 +38,7 @@ internal class SimaiNote
     public double holdTime = 0d;
     public bool isBreak = false;
     public bool isEx = false;
+    public bool isFake = false;
     public bool isFakeRotate = false;
     public bool isForceStar = false;
     public bool isHanabi = false;

@@ -231,7 +231,7 @@ public class JsonDataLoader : MonoBehaviour
                     {
                         var GOnote = Instantiate(tapPrefab, notes.transform);
                         var NDCompo = GOnote.GetComponent<TapDrop>();
-
+                        
                         // note的图层顺序
                         NDCompo.noteSortOrder = noteSortOrder;
                         noteSortOrder -= NOTE_LAYER_COUNT[note.noteType];
@@ -257,6 +257,7 @@ public class JsonDataLoader : MonoBehaviour
                         NDCompo.BreakShine = BreakShine;
 
                         if (timing.noteList.Count > 1) NDCompo.isEach = true;
+                        NDCompo.isFake = note.isFake;
                         NDCompo.isBreak = note.isBreak;
                         NDCompo.isEX = note.isEx;
                         NDCompo.time = (float)timing.time;
@@ -285,6 +286,7 @@ public class JsonDataLoader : MonoBehaviour
                         NDCompo.BreakShine = BreakShine;
 
                         if (timing.noteList.Count > 1) NDCompo.isEach = true;
+                        NDCompo.isFake = note.isFake;
                         NDCompo.time = (float)timing.time;
                         NDCompo.LastFor = (float)note.holdTime;
                         NDCompo.startPosition = note.startPosition;
@@ -388,13 +390,13 @@ public class JsonDataLoader : MonoBehaviour
         foreach (var note in timing.noteList)
             if (!note.isBreak)
             {
-                if (note.noteType == SimaiNoteType.Tap) ObjectCounter.tapSum++;
-                if (note.noteType == SimaiNoteType.Hold) ObjectCounter.holdSum++;
-                if (note.noteType == SimaiNoteType.TouchHold) ObjectCounter.holdSum++;
-                if (note.noteType == SimaiNoteType.Touch) ObjectCounter.touchSum++;
+                if (note.noteType == SimaiNoteType.Tap && !note.isFake) ObjectCounter.tapSum++;
+                if (note.noteType == SimaiNoteType.Hold && !note.isFake) ObjectCounter.holdSum++;
+                if (note.noteType == SimaiNoteType.TouchHold && !note.isFake) ObjectCounter.holdSum++;
+                if (note.noteType == SimaiNoteType.Touch && !note.isFake) ObjectCounter.touchSum++;
                 if (note.noteType == SimaiNoteType.Slide)
                 {
-                    if (!note.isSlideNoHead) ObjectCounter.tapSum++;
+                    if (!note.isSlideNoHead && !note.isFake) ObjectCounter.tapSum++;
                     if (note.isSlideBreak)
                         ObjectCounter.breakSum++;
                     else
@@ -411,7 +413,7 @@ public class JsonDataLoader : MonoBehaviour
                     else
                         ObjectCounter.slideSum++;
                 }
-                else
+                else if(!note.isFake)
                 {
                     ObjectCounter.breakSum++;
                 }
@@ -423,11 +425,11 @@ public class JsonDataLoader : MonoBehaviour
         foreach (var note in timing)
             if (!note.isBreak)
             {
-                if (note.noteType == SimaiNoteType.Tap) ObjectCounter.tapCount++;
-                if (note.noteType == SimaiNoteType.Hold) ObjectCounter.holdCount++;
-                if (note.noteType == SimaiNoteType.TouchHold) ObjectCounter.holdCount++;
-                if (note.noteType == SimaiNoteType.Touch) ObjectCounter.touchCount++;
-                if (note.noteType == SimaiNoteType.Slide)
+                if (note.noteType == SimaiNoteType.Tap && !note.isFake) ObjectCounter.tapCount++;
+                if (note.noteType == SimaiNoteType.Hold && !note.isFake) ObjectCounter.holdCount++;
+                if (note.noteType == SimaiNoteType.TouchHold && !note.isFake) ObjectCounter.holdCount++;
+                if (note.noteType == SimaiNoteType.Touch && !note.isFake) ObjectCounter.touchCount++;
+                if (note.noteType == SimaiNoteType.Slide && !note.isFake)
                 {
                     if (!note.isSlideNoHead) ObjectCounter.tapCount++;
                     if (note.isSlideBreak)
@@ -446,7 +448,7 @@ public class JsonDataLoader : MonoBehaviour
                     else
                         ObjectCounter.slideCount++;
                 }
-                else
+                else if (!note.isFake)
                 {
                     ObjectCounter.breakCount++;
                 }
@@ -554,6 +556,7 @@ public class JsonDataLoader : MonoBehaviour
             o.isEx = note.isEx;
             o.isSlideBreak = note.isSlideBreak;
             o.isSlideNoHead = true;
+            o.isFake = note.isFake;
         });
         subSlide[0].isSlideNoHead = note.isSlideNoHead;
 
@@ -641,6 +644,7 @@ public class JsonDataLoader : MonoBehaviour
 
         var GOnote = Instantiate(starPrefab, notes.transform);
         var NDCompo = GOnote.GetComponent<StarDrop>();
+        NDCompo.isFake = note.isFake;
 
         // note的图层顺序
         NDCompo.noteSortOrder = noteSortOrder;
@@ -725,6 +729,7 @@ public class JsonDataLoader : MonoBehaviour
     {
         var GOnote = Instantiate(starPrefab, notes.transform);
         var NDCompo = GOnote.GetComponent<StarDrop>();
+        NDCompo.isFake = note.isFake;
 
         // note的图层顺序
         NDCompo.noteSortOrder = noteSortOrder;

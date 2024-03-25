@@ -105,12 +105,17 @@ public class TapDrop : NoteDrop
             animator.Play("BreakShine", -1, 0.5f);
         }
 
-        if (timing > 0)
+        if (timing > 0 && !isFake)
         {
             GameObject.Find("NoteEffects").GetComponent<NoteEffectManager>().PlayEffect(startPosition, isBreak);
             if (isBreak) ObjectCounter.breakCount++;
             else ObjectCounter.tapCount++;
 
+            Destroy(tapLine);
+            Destroy(gameObject);
+        }
+        else if(timing > 0.2 && isFake)
+        {
             Destroy(tapLine);
             Destroy(gameObject);
         }

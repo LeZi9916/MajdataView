@@ -138,7 +138,7 @@ public class StarDrop : NoteDrop
             animator.Play("BreakShine", -1, 0.5f);
         }
 
-        if (timing > 0)
+        if (timing > 0 && !isFake)
         {
             if (!isNoHead)
             {
@@ -147,6 +147,11 @@ public class StarDrop : NoteDrop
                 else ObjectCounter.tapCount++;
             }
 
+            Destroy(tapLine);
+            Destroy(gameObject);
+        }
+        else if (timing > 0.2 && isFake)
+        {
             Destroy(tapLine);
             Destroy(gameObject);
         }
