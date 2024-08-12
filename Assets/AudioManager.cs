@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Mathematics;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Networking;
@@ -70,12 +69,12 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var source = transform.Find("BGM").gameObject.GetComponent<AudioSource>();
+        var source = GameObject.Find("AudioTimeProvider").gameObject.GetComponent<AudioSource>();
         var audioTime = GameObject.Find("AudioTimeProvider").GetComponent<AudioTimeProvider>().AudioTime;
         //var audioTimeSamples = GameObject.Find("AudioTimeProvider").GetComponent<AudioSource>().timeSamples;
         
-        if(source.isPlaying &&  Math.Abs(audioTime - source.time) > 0.03)
-            source.time = audioTime;
+        //if(source.isPlaying &&  Math.Abs(audioTime - source.time) > 0.03)
+        //    source.time = audioTime;
     }
     private void OnEnable()
     {
