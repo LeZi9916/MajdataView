@@ -6,6 +6,7 @@ using Assets.Scripts.Types;
 using System.Text.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Security.Cryptography;
 
 public class HttpHandler : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class HttpHandler : MonoBehaviour
         SceneManager.LoadScene(1);
         http.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
         http.Prefixes.Add("http://localhost:8013/");
+        http.Prefixes.Add("http://localhost:8013/Ping/");
         http.Start();
         listen = new Task(httpListen);
         listen.Start();
@@ -33,6 +35,8 @@ public class HttpHandler : MonoBehaviour
         var multTouchHandler = GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>();
         var bgManager = GameObject.Find("Background").GetComponent<BGManager>();
         var bgCover = GameObject.Find("BackgroundCover").GetComponent<SpriteRenderer>();
+
+        InputManager.Mode = (AutoPlayMode)(int)data.EditorPlayMethod;
 
         timeProvider.SetStartTime((long)data.StartAt, (float)data.StartTime, (float)data.AudioSpeed);
         loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow((float)data.NoteSpeed + 0.9975f, -0.985558604f)));
@@ -60,7 +64,7 @@ public class HttpHandler : MonoBehaviour
         var bgManager = GameObject.Find("Background").GetComponent<BGManager>();
         var screenRecorder = GameObject.Find("ScreenRecorder").GetComponent<ScreenRecorder>();
 
-        InputManager.Mode = (AutoPlayMode)(int)data.EditorPlayMethod;
+        
 
         switch(data.Control)
         {
@@ -117,16 +121,40 @@ public class HttpHandler : MonoBehaviour
         {
             var context = http.GetContext();
             print(context.Request.HttpMethod);
-            var reader = new StreamReader(context.Request.InputStream);
-            var data = reader.ReadToEnd();
-            print(data);
-            request = data;
-            while (request != "") ;
-            context.Response.StatusCode = 200;
-            var stream = new StreamWriter(context.Response.OutputStream);
-            stream.WriteLine("Hello!!!");
-            stream.Close();
-            context.Response.Close();
+            switch(context.Request.RawUrl)
+            {
+                default:
+                case "/":
+                    {
+                        var reader = new StreamReader(context.Request.InputStream);
+                        var data = reader.ReadToEnd();
+                        print(data);
+                        request = data;
+                        while (request != "") ;
+                        context.Response.StatusCode = 200;
+                        using var stream = new StreamWriter(context.Response.OutputStream);
+                        stream.WriteLine("Hello!!!");
+                        context.Response.Close();
+                    }
+                    break;
+                case "/Ping/":
+                case "/Ping":
+                    {
+                        Task.Run(() =>
+                        {
+                            var json = JsonSerializer.Serialize(new ViewReport()
+                            {
+                                Response = "Pong"
+                            });
+                            context.Response.StatusCode = 200;
+                            using var stream = new StreamWriter(context.Response.OutputStream);
+                            stream.WriteLine(json);
+                            context.Response.Close();
+                        });
+                    }
+                    break;
+            }
+            
         }
 
         print("exit listen");

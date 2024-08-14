@@ -13,7 +13,7 @@ public class ScreenRecorder : MonoBehaviour
     JsonDataLoader loader;
     ObjectCounter counter;
 
-    private bool isRecording;
+    public bool isRecording { get; private set; }
 
     // Start is called before the first frame update
     private void Start()
