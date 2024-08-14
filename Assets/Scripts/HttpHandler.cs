@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Assets.Scripts.Types;
-using Newtonsoft.Json;
+using System.Text.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,77 +25,65 @@ public class HttpHandler : MonoBehaviour
         listen.Start();
         print("server started");
     }
-
-    private void Update()
+    void InitJsonLoader(in EditRequest data,bool isRecordOrPreview = false)
     {
-        if (string.IsNullOrEmpty(request)) return;
-
-        IsReloding = false;
-        var data = JsonConvert.DeserializeObject<EditRequestjson>(request);
-        request = string.Empty;
-
         var loader = GameObject.Find("DataLoader").GetComponent<JsonDataLoader>();
         var timeProvider = GameObject.Find("AudioTimeProvider").GetComponent<AudioTimeProvider>();
+        var objectCounter = GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>();
+        var multTouchHandler = GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>();
         var bgManager = GameObject.Find("Background").GetComponent<BGManager>();
         var bgCover = GameObject.Find("BackgroundCover").GetComponent<SpriteRenderer>();
+
+        timeProvider.SetStartTime((long)data.StartAt, (float)data.StartTime, (float)data.AudioSpeed);
+        loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow((float)data.NoteSpeed + 0.9975f, -0.985558604f)));
+        loader.touchSpeed = (float)data.TouchSpeed;
+        loader.smoothSlideAnime = (bool)data.SmoothSlideAnime;
+        objectCounter.ComboSetActive((EditorComboIndicator)data.ComboStatusType);
+        loader.LoadJson(File.ReadAllText(data.JsonPath), (float)data.StartTime);
+        multTouchHandler.clearSlots();
+        bgManager.LoadBGFromPath(new FileInfo(data.JsonPath).DirectoryName, (float)data.AudioSpeed);
+        bgCover.color = new Color(0f, 0f, 0f, (float)data.BackgroundCover);
+
+        if(isRecordOrPreview)
+            bgManager.PlaySongDetail();
+    }
+    private void Update()
+    {
+        if (string.IsNullOrEmpty(request)) 
+            return;
+
+        IsReloding = false;
+        var data = JsonSerializer.Deserialize<EditRequest>(request);
+        request = string.Empty;
+
+        var timeProvider = GameObject.Find("AudioTimeProvider").GetComponent<AudioTimeProvider>();
+        var bgManager = GameObject.Find("Background").GetComponent<BGManager>();
         var screenRecorder = GameObject.Find("ScreenRecorder").GetComponent<ScreenRecorder>();
-        var multTouchHandler = GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>();
-        var objectCounter = GameObject.Find("ObjectCounter").GetComponent<ObjectCounter>();
 
-        InputManager.Mode = (AutoPlayMode)(int)data.editorPlayMethod;
+        InputManager.Mode = (AutoPlayMode)(int)data.EditorPlayMethod;
 
-        switch(data.control)
+        switch(data.Control)
         {
             case EditorControlMethod.Start:
                 {
-                    timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
-                    loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
-                    loader.touchSpeed = data.touchSpeed;
-                    loader.smoothSlideAnime = data.smoothSlideAnime;
-                    objectCounter.ComboSetActive(data.comboStatusType);
-                    loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
+                    InitJsonLoader(data);
                     GameObject.Find("Notes").GetComponent<PlayAllPerfect>().enabled = false;
-                    GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>().clearSlots();
-
-                    bgManager.LoadBGFromPath(new FileInfo(data.jsonPath).DirectoryName, data.audioSpeed);
-                    bgCover.color = new Color(0f, 0f, 0f, data.backgroundCover);
-                    //GameObject.Find("Notes").GetComponent<NoteManager>().Refresh();
                 }
                 break;
             case EditorControlMethod.OpStart:
                 {
-                    timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
-                    loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
-                    loader.touchSpeed = data.touchSpeed;
-                    loader.smoothSlideAnime = data.smoothSlideAnime;
-                    objectCounter.ComboSetActive(data.comboStatusType);
-                    loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
-                    GameObject.Find("MultTouchHandler").GetComponent<MultTouchHandler>().clearSlots();
-
-                    bgManager.LoadBGFromPath(new FileInfo(data.jsonPath).DirectoryName, data.audioSpeed);
-                    bgCover.color = new Color(0f, 0f, 0f, data.backgroundCover);
-                    bgManager.PlaySongDetail();
-                    //GameObject.Find("Notes").GetComponent<NoteManager>().Refresh();
+                    InitJsonLoader(data,true);
                 }
                 break;
             case EditorControlMethod.Record:
                 {
-                    var maidataPath = new FileInfo(data.jsonPath).DirectoryName;
-                    timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed, true);
-                    loader.noteSpeed = (float)(107.25 / (71.4184491 * Mathf.Pow(data.noteSpeed + 0.9975f, -0.985558604f)));
-                    loader.touchSpeed = data.touchSpeed;
-                    loader.smoothSlideAnime = data.smoothSlideAnime;
-                    objectCounter.ComboSetActive(data.comboStatusType);
-                    loader.LoadJson(File.ReadAllText(data.jsonPath), data.startTime);
-                    multTouchHandler.clearSlots();
+                    var maidataPath = new FileInfo(data.JsonPath).DirectoryName;
+                    InitJsonLoader(data, true);
 
                     screenRecorder.CutoffTime = getChartLength();
                     screenRecorder.CutoffTime += 10f;
                     screenRecorder.StartRecording(maidataPath);
 
-                    bgManager.LoadBGFromPath(maidataPath, data.audioSpeed);
-                    bgCover.color = new Color(0f, 0f, 0f, data.backgroundCover);
-                    bgManager.PlaySongDetail();
                     GameObject.Find("CanvasButtons").SetActive(false);
                     //GameObject.Find("Notes").GetComponent<NoteManager>().Refresh();
                 }
@@ -111,8 +99,8 @@ public class HttpHandler : MonoBehaviour
                 SceneManager.LoadScene(1);
                 break;
             case EditorControlMethod.Continue:
-                timeProvider.SetStartTime(data.startAt, data.startTime, data.audioSpeed);
-                bgManager.ContinueVideo(data.audioSpeed);
+                timeProvider.SetStartTime((long)data.StartAt, (float)data.StartTime, (float)data.AudioSpeed);
+                bgManager.ContinueVideo((float)data.AudioSpeed);
                 break;
         }
     }

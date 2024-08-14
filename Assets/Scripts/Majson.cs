@@ -1,26 +1,26 @@
 ﻿using System.Collections.Generic;
-
+#nullable enable
 internal class Majson
 {
-    public string artist = "default";
-    public string designer = "default";
-    public string difficulty = "EZ";
-    public int diffNum = 0;
-    public string level = "1";
-    public List<SimaiTimingPoint> timingList = new();
-    public string title = "default";
+    public string artist { get; init; } = "default";
+    public string designer { get; init; } = "default";
+    public string difficulty { get; init; } = "EZ";
+    public int diffNum { get; init; } = 0;
+    public string level { get; init; } = "1";
+    public List<SimaiTimingPoint> timingList { get; init; } = new();
+    public string title { get; init; } = "default";
 }
 
 internal class SimaiTimingPoint
 {
-    public float currentBpm;
-    public bool havePlayed;
-    public float HSpeed = 1.0f;
-    public string noteContent;
-    public List<SimaiNote> noteList = new();
-    public int rawTextPositionX;
-    public int rawTextPositionY;
-    public double time;
+    public float currentBpm { get; set; } = -1;
+    public bool havePlayed { get; set; }
+    public float HSpeed { get; set; } = 1f;
+    public List<SimaiNote> noteList { get; set; } = new(); //only used for json serialize
+    public string notesContent { get; set; }
+    public int rawTextPositionX { get; set; }
+    public int rawTextPositionY { get; set; }
+    public double time { get; set; }
 }
 
 internal enum SimaiNoteType
@@ -34,38 +34,38 @@ internal enum SimaiNoteType
 
 internal class SimaiNote
 {
-    public double holdTime = 0d;
-    public bool isBreak = false;
-    public bool isEx = false;
-    public bool isFakeRotate = false;
-    public bool isForceStar = false;
-    public bool isHanabi = false;
-    public bool isSlideBreak = false;
-    public bool isSlideNoHead = false;
+    public double holdTime { get; set; } = 0d;
+    public bool isBreak { get; set; } = false;
+    public bool isEx { get; set; } = false;
+    public bool isFakeRotate { get; set; } = false;
+    public bool isForceStar { get; set; } = false;
+    public bool isHanabi { get; set; } = false;
+    public bool isSlideBreak { get; set; } = false;
+    public bool isSlideNoHead { get; set; } = false;
 
-    public string noteContent; //used for star explain
-    public SimaiNoteType noteType;
+    public string noteContent { get; set; } //used for star explain
+    public SimaiNoteType noteType { get; set; }
 
-    public double slideStartTime = 0d;
-    public double slideTime = 0d;
+    public double slideStartTime { get; set; } = 0d;
+    public double slideTime { get; set; } = 0d;
 
-    public int startPosition = 1; //键位（1-8）
-    public char touchArea = ' ';
+    public int startPosition { get; set; } = 1; //键位（1-8）
+    public char touchArea { get; set; } = ' ';
 }
 
-internal class EditRequestjson
+internal readonly struct EditRequest
 {
-    public float audioSpeed;
-    public float backgroundCover;
-    public EditorComboIndicator comboStatusType;
-    public EditorPlayMethod editorPlayMethod;
-    public EditorControlMethod control;
-    public string jsonPath;
-    public float noteSpeed;
-    public long startAt;
-    public float startTime;
-    public float touchSpeed;
-    public bool smoothSlideAnime;
+    public float? AudioSpeed { get; init; }
+    public float? BackgroundCover { get; init; }
+    public EditorComboIndicator? ComboStatusType { get; init; }
+    public EditorPlayMethod? EditorPlayMethod { get; init; }
+    public EditorControlMethod Control { get; init; }
+    public string? JsonPath { get; init; }
+    public float? NoteSpeed { get; init; }
+    public long? StartAt { get; init; }
+    public float? StartTime { get; init; }
+    public float? TouchSpeed { get; init; }
+    public bool? SmoothSlideAnime { get; init; }
 }
 
 public enum EditorComboIndicator

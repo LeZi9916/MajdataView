@@ -1,9 +1,9 @@
 ﻿using Assets.Scripts.Types;
 using Assets.Scripts.Notes;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
@@ -741,7 +741,7 @@ public class JsonDataLoader : MonoBehaviour
     }
     public void LoadJson(string json, float ignoreOffset)
     {
-        jsonLoaderTask = Task.Run(() => JsonConvert.DeserializeObject<Majson>(json));
+        jsonLoaderTask = Task.Run(() => JsonSerializer.Deserialize<Majson>(json));
         State = NoteLoaderStatus.LodingJson;
         this.ignoreOffset = ignoreOffset;
     }
