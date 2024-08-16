@@ -120,41 +120,35 @@ public class HttpHandler : MonoBehaviour
         while (http.IsListening)
         {
             var context = http.GetContext();
-            print(context.Request.HttpMethod);
+            
             switch(context.Request.RawUrl)
             {
-                default:
-                case "/":
+                case "/Ping/":
                     {
+                        context.Response.StatusCode = 200;
+                        var stream = new StreamWriter(context.Response.OutputStream);
+                        stream.WriteLine("Pong");
+                        stream.Close();
+                        context.Response.Close();
+                    }
+                    break;
+                default:
+                    {
+                        print(context.Request.HttpMethod);
                         var reader = new StreamReader(context.Request.InputStream);
                         var data = reader.ReadToEnd();
                         print(data);
                         request = data;
                         while (request != "") ;
                         context.Response.StatusCode = 200;
-                        using var stream = new StreamWriter(context.Response.OutputStream);
+                        var stream = new StreamWriter(context.Response.OutputStream);
                         stream.WriteLine("Hello!!!");
+                        stream.Close();
                         context.Response.Close();
                     }
                     break;
-                case "/Ping/":
-                case "/Ping":
-                    {
-                        Task.Run(() =>
-                        {
-                            var json = JsonSerializer.Serialize(new ViewReport()
-                            {
-                                Response = "Pong"
-                            });
-                            context.Response.StatusCode = 200;
-                            using var stream = new StreamWriter(context.Response.OutputStream);
-                            stream.WriteLine(json);
-                            context.Response.Close();
-                        });
-                    }
-                    break;
             }
-            
+
         }
 
         print("exit listen");
